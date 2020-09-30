@@ -1,2 +1,3 @@
-# lana-bechallenge-checkout
-Lana Backend Challenge - Checkout Service
+# Lana Backend Challenge
+
+## Checkout Service
