@@ -44,8 +44,8 @@ func (b *Basket) updateTotals() {
 	b.Subtotal = 0
 	b.Discount = 0
 	for _, i := range b.Items {
-		b.Subtotal = i.Total
-		b.Discount = i.Discount
+		b.Subtotal += i.Total
+		b.Discount += i.Discount
 	}
 	b.Total = b.Subtotal - b.Discount
 

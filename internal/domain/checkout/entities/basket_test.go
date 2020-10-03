@@ -63,3 +63,22 @@ func TestBasket_GetItem_Nil(t *testing.T) {
 	// Then
 	assert.Nil(t, basketItem)
 }
+
+func TestBasket_MultipleItems_Totals(t *testing.T) {
+	// Given
+	b := NewBasket()
+
+	// When
+	bi := NewBasketItem(Product{ID: "PEN", Price: 5}, nil)
+	bi.AddQuantity(2)
+	b.SaveItem(bi)
+	bi = NewBasketItem(Product{ID: "TSHIRT", Price: 15.5}, nil)
+	bi.AddQuantity(10)
+	b.SaveItem(bi)
+
+	// Then
+	assert.Equal(t, 2, len(b.Items))
+	assert.Equal(t, 165.0, b.Subtotal)
+	assert.Equal(t, 0.0, b.Discount)
+	assert.Equal(t, 165.0, b.Total)
+}
