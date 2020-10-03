@@ -79,22 +79,22 @@ func (h Handler) BasketDelete(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (h Handler) BasketAddItems(w http.ResponseWriter, r *http.Request) {
+func (h Handler) BasketAddItem(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Request params
 	basketID := chi.URLParam(r, UrlParamBasketID)
 
-	// Items from payload
-	items := make([]entities.ItemDetail, 0)
-	if err := json.NewDecoder(r.Body).Decode(&items); err != nil {
+	// Item from payload
+	item := entities.ItemDetail{}
+	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
 		err = lanaerr.New(err, http.StatusBadRequest)
 		h.HandleError(w, err)
 		return
 	}
 
 	// Service call
-	if err := h.srv.BasketAddItems(ctx, basketID, items); err != nil {
+	if err := h.srv.BasketAddItem(ctx, basketID, item); err != nil {
 		h.HandleError(w, err)
 		return
 	}
@@ -109,14 +109,18 @@ func (h Handler) BasketRemoveItem(w http.ResponseWriter, r *http.Request) {
 	// Request params
 	basketID := chi.URLParam(r, UrlParamBasketID)
 	productID := chi.URLParam(r, UrlParamProductID)
-	quantity, err := h.GetQueryParamIntValue(r, QueryParamQuantity, 1)
+	quantity, err := h.GetQueryParamUintValue(r, QueryParamQuantity, 1)
 	if err != nil {
 		h.HandleError(w, err)
 		return
 	}
+	itemDetail := entities.ItemDetail{
+		ProductID: productID,
+		Quantity:  quantity,
+	}
 
 	// Service call
-	err = h.srv.BasketRemoveItem(ctx, basketID, productID, quantity)
+	err = h.srv.BasketRemoveItem(ctx, basketID, itemDetail)
 	if err != nil {
 		h.HandleError(w, err)
 		return

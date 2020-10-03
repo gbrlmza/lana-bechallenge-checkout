@@ -88,7 +88,7 @@ func Test_storage_ProductGet_Success(t *testing.T) {
 	jsonP, _ := json.Marshal(p)
 
 	// Then
-	expectedProduct := `{"id":"PEN","name":"Lana Pen","price":5,"discount_id":"BUY2GET1FREE"}`
+	expectedProduct := `{"id":"PEN","name":"Lana Pen","price":5,"promotion_id":"BUY2GET1FREE"}`
 	assert.Equal(t, expectedProduct, string(jsonP))
 	assert.Nil(t, err)
 }
@@ -113,38 +113,36 @@ func Test_storage_ProductList_Success(t *testing.T) {
 
 	// When
 	list, err := s.ProductList(ctx)
-	jsonList, _ := json.Marshal(list)
 
 	// Then
-	expectedList := `[{"id":"PEN","name":"Lana Pen","price":5,"discount_id":"BUY2GET1FREE"},{"id":"TSHIRT","name":"Lana T-Shirt","price":20,"discount_id":"BUY3GET25OFF"},{"id":"MUG","name":"Lana Coffee Mug","price":7.5,"discount_id":null}]`
-	assert.Equal(t, expectedList, string(jsonList))
+	assert.Equal(t, 3, len(list))
 	assert.Nil(t, err)
 }
 
-func Test_storage_DiscountGet_Success(t *testing.T) {
+func Test_storage_PromotionGet_Success(t *testing.T) {
 	// Given
 	ctx := context.Background()
 	s := storage.NewStorage(ctx)
 
 	// When
-	d, err := s.DiscountGet(ctx, "BUY2GET1FREE")
-	jsonD, _ := json.Marshal(d)
+	promotion, err := s.PromotionGet(ctx, "BUY2GET1FREE")
+	jsonPromotion, _ := json.Marshal(promotion)
 
 	// Then
-	expectedDiscount := `{"code":"BUY2GET1FREE","type":"BuyXGetN","required_items":2,"free_items":1,"reduction":0}`
-	assert.Equal(t, expectedDiscount, string(jsonD))
+	expectedDiscount := `{"id":"BUY2GET1FREE","required_items":2,"free_items":1,"reduction":0}`
+	assert.Equal(t, expectedDiscount, string(jsonPromotion))
 	assert.Nil(t, err)
 }
 
-func Test_storage_DiscountGet_NotFound(t *testing.T) {
+func Test_storage_PromotionGet_NotFound(t *testing.T) {
 	// Given
 	ctx := context.Background()
 	s := storage.NewStorage(ctx)
 
 	// When
-	d, err := s.DiscountGet(ctx, "3X2")
+	d, err := s.PromotionGet(ctx, "3X2")
 
 	// Then
-	assert.EqualError(t, err, "discount 3X2 not found")
+	assert.EqualError(t, err, "promotion 3X2 not found")
 	assert.Nil(t, d)
 }

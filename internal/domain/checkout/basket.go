@@ -4,13 +4,11 @@ import (
 	"context"
 	"fmt"
 	"github.com/gbrlmza/lana-bechallenge-checkout/internal/domain/checkout/entities"
+	"github.com/gbrlmza/lana-bechallenge-checkout/internal/utils/lanaerr"
+	"net/http"
 )
 
 func (s *service) BasketCreate(ctx context.Context) (*entities.Basket, error) {
-	// In a more realistic scenario the, a user may have only one basket or at least one basket
-	// per session and the creation of basket may be idempotent and some other constraints.
-	// This kind of logic is business logic and should be placed here in the domain service.
-
 	basket := entities.NewBasket()
 	if err := s.Storage.BasketSave(ctx, basket); err != nil {
 		return nil, err
@@ -40,49 +38,7 @@ func (s *service) BasketDelete(ctx context.Context, basketID string) error {
 	return s.Storage.BasketDelete(ctx, basketID)
 }
 
-func (s *service) BasketAddItems(ctx context.Context, basketID string, items []entities.ItemDetail) error {
-	// Lock basket
-	lockKey := s.getBasketLockKey(basketID)
-	if err := s.Locker.Lock(ctx, lockKey); err != nil {
-		return err
-	}
-	defer s.Locker.Unlock(ctx, lockKey)
-
-	// Note: In this basic case there is no need for a lock keep alive function but in a real case
-	// we will probably need a lock keep alive to ensure the resource remains locked before confirming
-	// the changes because some of the operation can take longer than expected(network problems, lag,
-	// slow repository, load, etc...). With and ACID storage this means to be sure the resource is
-	// locked before committing the changes.
-
-	// Get Basket
-	basket, err := s.Storage.BasketGet(ctx, basketID)
-	if err != nil {
-		return err
-	}
-
-	for _, item := range items {
-		// Obtain product
-		product, err := s.Storage.ProductGet(ctx, item.ProductID)
-		if err != nil {
-			return err
-		}
-
-		// Add product to basket
-		if err := basket.AddItem(product, item.Quantity); err != nil {
-			return err
-		}
-	}
-
-	// Update basket
-	if err := s.Storage.BasketSave(ctx, basket); err != nil {
-		return err
-	}
-
-	// Done
-	return nil
-}
-
-func (s *service) BasketRemoveItem(ctx context.Context, basketID string, productID string, quantity int) error {
+func (s *service) BasketAddItem(ctx context.Context, basketID string, itemDetail entities.ItemDetail) error {
 	// Lock basket
 	lockKey := s.getBasketLockKey(basketID)
 	if err := s.Locker.Lock(ctx, lockKey); err != nil {
@@ -97,17 +53,68 @@ func (s *service) BasketRemoveItem(ctx context.Context, basketID string, product
 	}
 
 	// Obtain product
-	product, err := s.Storage.ProductGet(ctx, productID)
+	product, err := s.Storage.ProductGet(ctx, itemDetail.ProductID)
 	if err != nil {
 		return err
 	}
 
-	// Remove product from basket
-	if err := basket.RemoveItem(product, quantity); err != nil {
+	// Check if product is already in the basket
+	basketItem := basket.GetItem(itemDetail.ProductID)
+	if basketItem == nil { // If not, create new basket item
+		var promotion *entities.Promotion
+		if product.PromotionID != nil {
+			if promotion, err = s.Storage.PromotionGet(ctx, *product.PromotionID); err != nil {
+				return err
+			}
+		}
+		basketItem = entities.NewBasketItem(*product, promotion)
+	}
+
+	// Add quantity
+	basketItem.AddQuantity(itemDetail.Quantity)
+
+	// Save item in basket
+	basket.SaveItem(basketItem)
+
+	// Save basket
+	if err := s.Storage.BasketSave(ctx, basket); err != nil {
 		return err
 	}
 
-	// Update basket
+	// Done
+	return nil
+}
+
+func (s *service) BasketRemoveItem(ctx context.Context, basketID string, itemDetail entities.ItemDetail) error {
+	// Lock basket
+	lockKey := s.getBasketLockKey(basketID)
+	if err := s.Locker.Lock(ctx, lockKey); err != nil {
+		return err
+	}
+	defer s.Locker.Unlock(ctx, lockKey)
+
+	// Get Basket
+	basket, err := s.Storage.BasketGet(ctx, basketID)
+	if err != nil {
+		return err
+	}
+
+	// Check if product is in the basket
+	basketItem := basket.GetItem(itemDetail.ProductID)
+	if basketItem == nil {
+		err := fmt.Errorf("item %s not found in basket %s", itemDetail.ProductID, basketID)
+		return lanaerr.New(err, http.StatusNotFound)
+	}
+
+	// Remove quantity
+	if err := basketItem.RemoveQuantity(itemDetail.Quantity); err != nil {
+		return err
+	}
+
+	// Update item in basket
+	basket.SaveItem(basketItem)
+
+	// Save basket
 	if err := s.Storage.BasketSave(ctx, basket); err != nil {
 		return err
 	}
@@ -117,5 +124,5 @@ func (s *service) BasketRemoveItem(ctx context.Context, basketID string, product
 }
 
 func (s *service) getBasketLockKey(basketID string) string {
-	return fmt.Sprintf("backet-%s", basketID)
+	return fmt.Sprintf("basket-%s", basketID)
 }

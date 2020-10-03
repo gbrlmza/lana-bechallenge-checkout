@@ -18,16 +18,16 @@ func (h Handler) HandleError(w http.ResponseWriter, err error) {
 	w.Write([]byte(lErr.Error()))
 }
 
-func (h Handler) GetQueryParamIntValue(r *http.Request, name string, defaultValue int) (int, error) {
+func (h Handler) GetQueryParamUintValue(r *http.Request, name string, defaultValue uint) (uint, error) {
 	value := r.URL.Query().Get(name)
 	if value == "" {
 		return defaultValue, nil
 	}
 
-	intValue, err := strconv.Atoi(value)
+	intValue, err := strconv.ParseUint(value, 10, 0)
 	if err != nil {
 		return 0, lanaerr.New(fmt.Errorf("invalid %s value: %s", name, value), http.StatusBadRequest)
 	}
 
-	return intValue, nil
+	return uint(intValue), nil
 }

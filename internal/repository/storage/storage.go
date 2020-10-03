@@ -13,14 +13,14 @@ import (
 
 type storage struct {
 	data struct {
-		products  map[string]entities.Product
-		baskets   map[string]entities.Basket
-		discounts map[string]entities.Discount
+		products   map[string]entities.Product
+		baskets    map[string]entities.Basket
+		promotions map[string]entities.Promotion
 	}
 	mutex struct {
-		product  sync.Mutex
-		basket   sync.Mutex
-		discount sync.Mutex
+		product   sync.Mutex
+		basket    sync.Mutex
+		promotion sync.Mutex
 	}
 }
 
@@ -102,16 +102,16 @@ func (s *storage) ProductList(ctx context.Context) ([]entities.Product, error) {
 	return products, nil
 }
 
-func (s *storage) DiscountGet(ctx context.Context, discountID string) (*entities.Discount, error) {
-	// Lock discount map
-	s.mutex.discount.Lock()
-	defer s.mutex.discount.Unlock()
+func (s *storage) PromotionGet(ctx context.Context, promotionID string) (*entities.Promotion, error) {
+	// Lock promotion map
+	s.mutex.promotion.Lock()
+	defer s.mutex.promotion.Unlock()
 
-	// Get discount from storage data
-	if discount, ok := s.data.discounts[discountID]; ok {
+	// Get promotion from storage data
+	if discount, ok := s.data.promotions[promotionID]; ok {
 		return &discount, nil
 	}
 
-	// Discount not found
-	return nil, lanaerr.New(fmt.Errorf("discount %s not found", discountID), http.StatusNotFound)
+	// Promotion not found
+	return nil, lanaerr.New(fmt.Errorf("promotion %s not found", promotionID), http.StatusNotFound)
 }

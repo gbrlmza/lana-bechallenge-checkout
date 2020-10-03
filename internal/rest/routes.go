@@ -29,7 +29,7 @@ func (h *Handler) RouterInit() http.Handler {
 			r.Delete("/{basketID}", h.BasketDelete)
 
 			// Add product to basket
-			r.Post("/{basketID}/items", h.BasketAddItems)
+			r.Post("/{basketID}/items", h.BasketAddItem)
 
 			// Remove product from basket
 			r.Delete("/{basketID}/items/{productID}", h.BasketRemoveItem)

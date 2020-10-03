@@ -28,8 +28,8 @@ type Storage interface {
 	ProductGet(ctx context.Context, productID string) (*entities.Product, error)
 	ProductList(ctx context.Context) ([]entities.Product, error)
 
-	// Discount
-	DiscountGet(ctx context.Context, discountID string) (*entities.Discount, error)
+	// Promotion
+	PromotionGet(ctx context.Context, promotionID string) (*entities.Promotion, error)
 }
 
 type Locker interface {
