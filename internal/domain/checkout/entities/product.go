@@ -1,7 +1,8 @@
 package entities
 
 type Product struct {
-	Code  string  `json:"code"`
-	Name  string  `json:"name"`
-	Price float64 `json:"price"`
+	ID         string  `json:"id"`
+	Name       string  `json:"name"`
+	Price      float64 `json:"price"`
+	DiscountID *string `json:"discount_id"`
 }

@@ -17,8 +17,8 @@ type Service interface {
 	BasketCreate(ctx context.Context) (*entities.Basket, error)
 	BasketGet(ctx context.Context, basketID string) (*entities.Basket, error)
 	BasketDelete(ctx context.Context, basketID string) error
-	BasketAddProduct(ctx context.Context, basketID string, productCode string, quantity int) error
-	BasketRemoveProduct(ctx context.Context, basketID string, productCode string, quantity int) error
+	BasketAddItems(ctx context.Context, basketID string, items []entities.ItemDetail) error
+	BasketRemoveItem(ctx context.Context, basketID string, productID string, quantity int) error
 
 	// Product
 	ProductList(ctx context.Context) ([]entities.Product, error)

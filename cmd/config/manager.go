@@ -8,17 +8,15 @@ import (
 	"os"
 )
 
-/*
-	The config package can load application configuration from yaml files inside config directory.
-	The basic config includes server port and go_environment. GoEnvironment and Port has default values
-	that can be override with environment variables.
-
-	This is useful to provide configuration on containers.
-
-	The default values are:
-	- Port: 8080
-	- GoEnvironment: develop (this means that additional config will be loaded from config/develop.yml)
-*/
+// The config package can load application configuration from yaml files inside config directory.
+// The basic config includes server port and go_environment. GoEnvironment and Port has default values
+// that can be override with environment variables.
+//
+// This is useful to provide configuration on containers.
+//
+// The default values are:
+// - Port: 8080
+// - GoEnvironment: develop (this means that additional config will be loaded from config/develop.yml)
 
 const (
 	defaultPort      = "8080"

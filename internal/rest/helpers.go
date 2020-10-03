@@ -1,25 +1,33 @@
 package rest
 
 import (
-	"github.com/go-chi/render"
+	"fmt"
+	"github.com/gbrlmza/lana-bechallenge-checkout/internal/utils/lanaerr"
 	"net/http"
+	"strconv"
 )
 
 type BasketProduct struct {
 	Quantity int `json:"quantity"`
 }
 
-func getBasketProductQuantity(r *http.Request) (int, error) {
-	// Bind payload
-	basketProduct := &BasketProduct{}
-	if err := render.DecodeJSON(r.Body, basketProduct); err != nil {
-		return 0, err
+func (h Handler) HandleError(w http.ResponseWriter, err error) {
+	lErr := lanaerr.FromErr(err)
+
+	w.WriteHeader(lErr.GetStatusCode())
+	w.Write([]byte(lErr.Error()))
+}
+
+func (h Handler) GetQueryParamIntValue(r *http.Request, name string, defaultValue int) (int, error) {
+	value := r.URL.Query().Get(name)
+	if value == "" {
+		return defaultValue, nil
 	}
 
-	// Set default quantity
-	if basketProduct.Quantity == 0 {
-		basketProduct.Quantity = 1
+	intValue, err := strconv.Atoi(value)
+	if err != nil {
+		return 0, lanaerr.New(fmt.Errorf("invalid %s value: %s", name, value), http.StatusBadRequest)
 	}
 
-	return basketProduct.Quantity, nil
+	return intValue, nil
 }

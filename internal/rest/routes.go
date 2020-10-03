@@ -17,7 +17,7 @@ func (h *Handler) RouterInit() http.Handler {
 	r.Route("/v1/", func(r chi.Router) {
 
 		// Basket endpoints
-		r.Route("/basket", func(r chi.Router) {
+		r.Route("/baskets", func(r chi.Router) {
 
 			// Create basket
 			r.Post("/", h.BasketCreate)
@@ -29,15 +29,15 @@ func (h *Handler) RouterInit() http.Handler {
 			r.Delete("/{basketID}", h.BasketDelete)
 
 			// Add product to basket
-			r.Put("/{basketID}/product/{productID}", h.BasketAddProduct)
+			r.Post("/{basketID}/items", h.BasketAddItems)
 
 			// Remove product from basket
-			r.Delete("/{basketID}/product/{productID}", h.BasketRemoveProduct)
+			r.Delete("/{basketID}/items/{productID}", h.BasketRemoveItem)
 
 		})
 
 		// Product endpoints
-		r.Route("/product", func(r chi.Router) {
+		r.Route("/products", func(r chi.Router) {
 
 			// Get product list
 			r.Get("/", h.ProductList)

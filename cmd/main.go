@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/gbrlmza/lana-bechallenge-checkout/cmd/config"
 	"github.com/gbrlmza/lana-bechallenge-checkout/cmd/container"
@@ -12,12 +13,13 @@ import (
 
 func main() {
 	// TODO: Explain hexagonal architecture
+	ctx := context.Background()
 
 	// Config
 	cfg := config.Get()
 
 	// Container & service initialization
-	container := container.NewContainer()
+	container := container.NewContainer(ctx)
 	service := checkout.NewService(container)
 
 	// Handler
