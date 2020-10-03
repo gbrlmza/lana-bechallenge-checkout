@@ -13,6 +13,7 @@ import (
 
 func main() {
 	// TODO: Explain hexagonal architecture
+	// TODO: Explain app wiring
 	ctx := context.Background()
 
 	// Config
