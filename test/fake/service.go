@@ -22,17 +22,17 @@ func (f FakeService) BasketGet(ctx context.Context, basketID string) (*entities.
 
 func (f FakeService) BasketDelete(ctx context.Context, basketID string) error {
 	args := f.Called(ctx, basketID)
-	return args.Error(1)
+	return args.Error(0)
 }
 
 func (f FakeService) BasketAddItem(ctx context.Context, basketID string, itemDetail entities.ItemDetail) error {
 	args := f.Called(ctx, basketID, itemDetail)
-	return args.Error(1)
+	return args.Error(0)
 }
 
 func (f FakeService) BasketRemoveItem(ctx context.Context, basketID string, itemDetail entities.ItemDetail) error {
 	args := f.Called(ctx, basketID, itemDetail)
-	return args.Error(1)
+	return args.Error(0)
 }
 
 func (f FakeService) ProductList(ctx context.Context) ([]entities.Product, error) {

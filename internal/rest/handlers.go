@@ -2,6 +2,7 @@ package rest
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/gbrlmza/lana-bechallenge-checkout/internal/domain/checkout"
 	"github.com/gbrlmza/lana-bechallenge-checkout/internal/domain/checkout/entities"
 	"github.com/gbrlmza/lana-bechallenge-checkout/internal/utils/lanaerr"
@@ -88,7 +89,7 @@ func (h Handler) BasketAddItem(w http.ResponseWriter, r *http.Request) {
 	// Item from payload
 	item := entities.ItemDetail{}
 	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
-		err = lanaerr.New(err, http.StatusBadRequest)
+		err = lanaerr.New(errors.New("payload error"), http.StatusBadRequest)
 		h.HandleError(w, err)
 		return
 	}
