@@ -58,6 +58,15 @@ More info on hexagonal architecture & Go:
 
 I chose this approach because allows us the decouple the app components and facilitates the evolution of the app. The domain logic is agnostic to all the external resources(database, external services like distributed locks, other API, etc...) and even how that logic is accessed(REST, gRPC, command line, etc...). This is achieved with separations of concerns and interfaces.
 
+#### Dependencies
+
+Only a minimal set of [dependencies](go.mod) are used:
+- `github.com/go-chi/chi` as router 
+- `github.com/google/uuid` to generate resource ID
+- `github.com/prometheus/client_golang` Prometheus client
+- `github.com/stretchr/testify` as testing framework
+- `gopkg.in/yaml.v2` for configuration files
+
 ---
 ### Storage
 
@@ -126,7 +135,7 @@ Monitoring is not requested nor mentioned on the challenge description, but I co
 
 Once again the internals of how the metrics interface is implemented are separated of the domain logic and we can create a Datadog implementation and use that implementation without touching the domain.
 
-In this case the metrics interface is the same app but could be an external library used by all apps to standardize how metrics are gathered.
+In this case the metrics interface is in the same app but could be an external library used by all apps to standardize how metrics are gathered.
 
 A `/ping` endpoint is available for instances health check.
 
@@ -144,7 +153,7 @@ Dashboard screenshot:
 ---
 ### Scalability
 
-In a real application the app cloud architecture could be something like this. Using a load balancer to handle multiple app instances, a separate database with master and replicas(slaves) or with a sharing approach. An external distributed lock would be used and the access to the app could by and nginx gateway.
+In a real application the app cloud architecture could be something like this. Using a load balancer to handle multiple app instances, a separate database with master and replicas(slaves) or with a sharding approach. An external distributed lock would be used and the access to the app could by and nginx gateway.
 
 ![](doc/img/diagram.png)
 
