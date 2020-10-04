@@ -1,0 +1,233 @@
+{
+	"info": {
+		"_postman_id": "66e74a79-83ed-4976-8edd-e27d4ddbd515",
+		"name": "Lana BE Challenge",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Ping",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/ping",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Product List",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/v1/products",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Product Get",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/v1/products/:product_id",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"products",
+						":product_id"
+					],
+					"variable": [
+						{
+							"key": "product_id",
+							"value": "PEN"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Basket Get",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/v1/baskets/:basket_id",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"baskets",
+						":basket_id"
+					],
+					"variable": [
+						{
+							"key": "basket_id",
+							"value": "{{lana_basket_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Basket Create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cb5bbfd9-6ee9-4fc6-8d6f-a4a4b78fb146",
+						"exec": [
+							"if (responseCode.code == 201) {",
+							"    var jsonData = JSON.parse(responseBody);",
+							"    pm.globals.set(\"lana_basket_id\", jsonData.id);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/v1/baskets",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"baskets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Basket Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/v1/baskets/:basket_id",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"baskets",
+						":basket_id"
+					],
+					"variable": [
+						{
+							"key": "basket_id",
+							"value": "{{lana_basket_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Basket Add Items",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"PEN\",\n    \"quantity\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/v1/baskets/:basket_id/items",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"baskets",
+						":basket_id",
+						"items"
+					],
+					"variable": [
+						{
+							"key": "basket_id",
+							"value": "{{lana_basket_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Basket Remove Item",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/v1/baskets/:basket_id/items/:item_id?quantity=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"baskets",
+						":basket_id",
+						"items",
+						":item_id"
+					],
+					"query": [
+						{
+							"key": "quantity",
+							"value": "1"
+						}
+					],
+					"variable": [
+						{
+							"key": "basket_id",
+							"value": "{{lana_basket_id}}"
+						},
+						{
+							"key": "item_id",
+							"value": "PEN"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
