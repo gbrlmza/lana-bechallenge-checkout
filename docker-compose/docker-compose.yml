@@ -1,0 +1,40 @@
+version: '3.1'
+
+services:
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus:/prometheus
+    command:
+      - '--config.file=/prometheus/config.yml'
+    ports:
+      - 8082:9090
+    restart: always
+    networks:
+      - lanaapp
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 8083:3000
+    depends_on:
+      - prometheus
+    volumes:
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    restart: always
+    networks:
+      - lanaapp
+
+  app:
+    build: ..
+    ports:
+      - 8081:8080
+    restart: always
+    networks:
+      - lanaapp
+
+networks:
+  lanaapp:
