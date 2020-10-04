@@ -3,6 +3,7 @@ version: '3.1'
 services:
 
   prometheus:
+    container_name: lanaapp-prometheus
     image: prom/prometheus
     volumes:
       - ./prometheus:/prometheus
@@ -15,6 +16,7 @@ services:
       - lanaapp
 
   grafana:
+    container_name: lanaapp-grafana
     image: grafana/grafana
     ports:
       - 8083:3000
@@ -29,6 +31,7 @@ services:
       - lanaapp
 
   app:
+    container_name: lanaapp-app
     build: ..
     ports:
       - 8081:8080
