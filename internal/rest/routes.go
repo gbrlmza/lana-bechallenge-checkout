@@ -4,23 +4,30 @@ import (
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 	"strings"
 )
 
 func (h *Handler) RouterInit() http.Handler {
+	// Create Router
 	r := chi.NewRouter()
-
-	// Profiling
-	r.Mount("/debug", middleware.Profiler())
 
 	// Health check endpoint for infrastructure monitoring & load balancers instances management
 	r.Get("/ping", h.Ping)
 
+	// Profiling
+	r.Mount("/debug", middleware.Profiler())
+
+	// Prometheus Metrics
+	r.Mount("/metrics", promhttp.Handler())
+
 	// API evolves over time and we need some kind of versioning system.
 	// I'm using the common URI versioning approach, but could be by header version,
 	// query param, accept header, domain, etc.
-	r.Route("/v1/", func(r chi.Router) {
+	//
+	// A metrics middleware is injected for all routes
+	r.With(MetricsMiddleware, middleware.Logger).Route("/v1/", func(r chi.Router) {
 
 		// Basket endpoints
 		r.Route("/baskets", func(r chi.Router) {

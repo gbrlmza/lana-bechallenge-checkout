@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gbrlmza/lana-bechallenge-checkout/internal/domain/checkout/entities"
+	"github.com/gbrlmza/lana-bechallenge-checkout/internal/repository/metrics"
 	"github.com/gbrlmza/lana-bechallenge-checkout/internal/utils/lanaerr"
 	"net/http"
 )
@@ -13,6 +14,9 @@ func (s *service) BasketCreate(ctx context.Context) (*entities.Basket, error) {
 	if err := s.Storage.BasketSave(ctx, basket); err != nil {
 		return nil, err
 	}
+
+	// Metric
+	metrics.Counter(ctx, "basket_created", 1)
 
 	return basket, nil
 }
@@ -80,6 +84,9 @@ func (s *service) BasketAddItem(ctx context.Context, basketID string, itemDetail
 	if err := s.Storage.BasketSave(ctx, basket); err != nil {
 		return err
 	}
+
+	// Metric
+	metrics.Counter(ctx, "basket_items_added", float64(itemDetail.Quantity))
 
 	// Done
 	return nil

@@ -13,7 +13,11 @@ import (
 // the same resource. An external distributed lock shared by all instances is the proper
 // way to do it, using something like Redis, Zookeeper, DynamoDB, etc..
 
-const defaultTTL = 5 * time.Second
+const (
+	defaultTTL       = 5 * time.Second
+	maxRetryAttempts = 3
+	retryWaitTime    = time.Millisecond * 100
+)
 
 func NewLocker(ctx context.Context) *locker {
 	return &locker{
@@ -37,6 +41,21 @@ func (l lockValue) expired() bool {
 }
 
 func (l locker) Lock(ctx context.Context, resource string) error {
+	var err error
+
+	// Retry strategy
+	for i := 1; i <= maxRetryAttempts; i++ {
+		if err = l.doLock(ctx, resource); err == nil {
+			// Resource successfully locked
+			return nil
+		}
+		time.Sleep(retryWaitTime)
+	}
+
+	return err
+}
+
+func (l locker) doLock(ctx context.Context, resource string) error {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
 
