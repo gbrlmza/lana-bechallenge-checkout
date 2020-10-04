@@ -70,9 +70,9 @@ Only a minimal set of [dependencies](go.mod) are used:
 ---
 ### Storage
 
-As per expressly requested on the challenge description no external database has been use. I implemented a basic [in-memory storage](internal/repository/storage/storage.go) with mutex locking on each resource to allow concurrency.
+As per expressly requested on the challenge description no external database has been used. I implemented a basic [in-memory storage](internal/repository/storage/storage.go) with mutex locking on each resource to allow concurrency.
 
-If we wanted to change the storage of the app for,let's say, an external database like PostgreSQL with connection pooling we only need to implement the interface [Storage](internal/domain/checkout/container.go) for that particular database and inject the new implementation in the [container initialization](cmd/container/container.go).
+If we wanted to change the storage of the app to an external database like PostgreSQL with connection pooling we only need to implement the interface [Storage](internal/domain/checkout/container.go) for that particular database and inject the new implementation in the [container initialization](cmd/container/container.go).
 
 ---
 ### Lock
@@ -86,7 +86,7 @@ In a real scenario something like Redis, Zookeeper, DynamoDB, etc should be used
 ---
 ### Endpoints
 
-REST interface was used to access the app. Could be also gRPC o GraphQL. With the implemented architecture how the app is served can be easily changed without touching the domain logic.
+REST interface was used to access the app. Could be also gRPC or GraphQL. With the implemented architecture how the app is served can be easily changed without touching the domain logic.
 
 The app exposes these endpoints. All are available on the same port but metrics and profiling are usually in different ports for security reasons.
 
@@ -131,9 +131,9 @@ The unit test coverage on /internal package is 100%. [Functional tests](test/fun
 ---
 ### Monitoring
 
-Monitoring is not requested nor mentioned on the challenge description, but I consider monitoring and observability as a must feature in every application. For this app I created a [metrics interface](internal/repository/metrics/metrics.go) that is injected in a [middleware](internal/rest/middleware.go) to track requests and in the context to be use for custom metrics like the counter of basket created and items added. An [implementation of that interface for Prometheus](internal/repository/metrics/prometheus/prometheus.go) is available. Grafana was used to created a dashboard with Prometheus as data source.
+Monitoring is not requested nor mentioned on the challenge description, but I consider monitoring and observability as a must feature in every application. For this app I created a [metrics interface](internal/repository/metrics/metrics.go) that is injected in a [middleware](internal/rest/middleware.go) to track requests and in the context to be use for custom metrics like the counter of basket created and items added. An [implementation of that interface for Prometheus](internal/repository/metrics/prometheus/prometheus.go) is available. Grafana is used to show the info with Prometheus as data source.
 
-Once again the internals of how the metrics interface is implemented are separated of the domain logic and we can create a Datadog implementation and use that implementation without touching the domain.
+Once again the internals of how the metrics interface are implemented is separated of the domain logic and we can create a Datadog implementation and use that implementation without touching the domain.
 
 In this case the metrics interface is in the same app but could be an external library used by all apps to standardize how metrics are gathered.
 
