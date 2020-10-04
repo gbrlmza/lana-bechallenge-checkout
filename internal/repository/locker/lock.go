@@ -11,7 +11,7 @@ import (
 // type of lock doesn't work because a locked resource in one instance is no locked in the
 // other instances and with concurrency we can have more than one instance working with
 // the same resource. An external distributed lock shared by all instances is the proper
-// way to do it, using something like Redis, Zookeeper, DynamoDB, etc..
+// way to do it, using something like Redis, Zookeeper, DynamoDB, etc...
 
 const (
 	defaultTTL       = 5 * time.Second
