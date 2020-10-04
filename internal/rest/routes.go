@@ -1,12 +1,18 @@
 package rest
 
 import (
+	"fmt"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"net/http"
+	"strings"
 )
 
 func (h *Handler) RouterInit() http.Handler {
 	r := chi.NewRouter()
+
+	// Profiling
+	r.Mount("/debug", middleware.Profiler())
 
 	// Health check endpoint for infrastructure monitoring & load balancers instances management
 	r.Get("/ping", h.Ping)
@@ -47,6 +53,15 @@ func (h *Handler) RouterInit() http.Handler {
 
 		})
 	})
+
+	// List registered routes
+	walkFunc := func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
+		route = strings.Replace(route, "/*/", "/", -1)
+		fmt.Printf("  - %s [%s]\n", route, method)
+		return nil
+	}
+	fmt.Println("### Registered routes:")
+	chi.Walk(r, walkFunc)
 
 	return r
 }
