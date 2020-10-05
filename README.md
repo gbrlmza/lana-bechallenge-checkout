@@ -215,7 +215,7 @@ Date: Sun, 04 Oct 2020 23:26:53 GMT
 
 #### Get basket details
 
-`curl --location --request GET 'localhost:8080/v1/baskets/9970a992-42b8-4a33-842c-4319d59a3040'`
+`curl --location --request GET 'localhost:8081/v1/baskets/9970a992-42b8-4a33-842c-4319d59a3040'`
 
 Response:
 
