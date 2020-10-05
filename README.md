@@ -77,7 +77,7 @@ If we wanted to change the storage of the app to an external database like Postg
 ---
 ### Lock
 
-On distributed system is common to use a distributed lock to ensure operations consistency. Given that we are only using a in-memory database and one instance I implemented an [in-memory lock](internal/repository/locker/lock.go) with a map with a very simple retry strategy(3 attempts, every 100ms). Even when the database permit multiple operations on the same resource at a domain level the lock is used to modify a basket.
+On distributed system is common to use a distributed lock to ensure operations consistency. Given that we are only using a in-memory database and one instance I implemented an [in-memory lock](internal/repository/locker/lock.go) with a map with a very simple retry strategy(3 attempts, every 100ms). Even when the database permits multiple operations on the same resource, at a domain level the lock is used to modify a basket.
 
 For example if we have concurrent requests to add and item to the basket and delete the basket, the operations will be executed in a serial manner. If delete happen first the add item request will return 404 because the basket no longer exists. If the item is added first, the basket will be successfully deleted after that. 
 
