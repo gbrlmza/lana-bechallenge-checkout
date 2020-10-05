@@ -91,8 +91,6 @@ func (s *storage) ProductList(ctx context.Context) ([]entities.Product, error) {
 	s.mutex.product.Lock()
 	defer s.mutex.product.Unlock()
 
-	// TODO: Explain search & pagination
-
 	// Get all products
 	products := make([]entities.Product, 0)
 	for _, p := range s.data.products {
